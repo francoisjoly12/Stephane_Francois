@@ -13,7 +13,8 @@ from collections import OrderedDict
 import adafruit_ntp
 import rtc
 
-
+#************TTTTTTEEEEESSSSTTTTTT//*********
+#test 2#
 # Mise en place des objets de la carte Arduino
 i2c = board.I2C()
 rtc = pcf8523.PCF8523(i2c)
