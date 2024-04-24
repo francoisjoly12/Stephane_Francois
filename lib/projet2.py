@@ -4,16 +4,10 @@ import terminalio
 from adafruit_display_text import label
 import adafruit_displayio_ssd1306
 import os
-import ssl
 import socketpool
 import wifi
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
-import adafruit_ntp
 
-from adafruit_io.adafruit_io import IO_MQTT
-
-global boutonReset
-global boutonToggle1
 
 class ecran:
 
@@ -24,6 +18,7 @@ class ecran:
         self.display = adafruit_displayio_ssd1306.SSD1306(self.display_bus, width=128, height=64, rotation=180)
         self.splash = displayio.Group()
         self.display.root_group = self.splash
+
         self.text = ""
         self.text_area = label.Label(terminalio.FONT, text=self.text, color=0xFFFFFF, x=5, y=10)
         self.splash.append(self.text_area)
@@ -36,64 +31,35 @@ class ecran:
     def texte(self):
         return self.text_area.text
 
+def connect(client, userdata, flags, rc):
+    # This function will be called when the client is connected
+    # successfully to the broker.
+    print('Connected to MQTT Broker!')
+    print('Flags: {0}\n RC: {1}'.format(flags, rc))
 
-# Fonction farenheit
-def celcius_to_fahrenheit(celcius: float) -> float:
-    fahrenheit = (celsius * 1.8) + 32
-    return fahrenheit
-
-# Fonctions pour MQTT
-# Définir les fonctions de rappel qui seront appelées lorsque certains événements se produisent.
-# pylint: disable=unused-argument
-def connected(client):
-    # La fonction Connected sera appelée lorsque le client sera connecté à Adafruit IO.
-    # C'est un bon endroit pour s'abonner aux changements de flux. Le paramètre client
-    # passé à cette fonction est le client MQTT Adafruit IO, vous pouvez donc effectuer
-    # des appels facilement.
-    print("Connecté à Adafruit IO !")
-
+def disconnect(client, userdata, rc):
+    # This method is called when the client disconnects
+    # from the broker.
+    print('Disconnected from MQTT Broker!')
 
 def subscribe(client, userdata, topic, granted_qos):
-    # Cette méthode est appelée lorsque le client s'abonne à un nouveau flux.
-    print("Abonné à {0} avec un niveau de QOS {1}".format(topic, granted_qos))
-
+    # This method is called when the client subscribes to a new feed.
+    print('Subscribed to {0} with QOS level {1}'.format(topic, granted_qos))
 
 def unsubscribe(client, userdata, topic, pid):
-    # Cette méthode est appelée lorsque le client se désabonne d'un flux.
-    print("Désabonné de {0} avec PID {1}".format(topic, pid))
+    # This method is called when the client unsubscribes from a feed.
+    print('Unsubscribed from {0} with PID {1}'.format(topic, pid))
 
+def publish(client, userdata, topic, pid):
+    # This method is called when the client publishes data to a feed.
+    print('Published to {0} with PID {1}'.format(topic, pid))
 
-# pylint: disable=unused-argument
-def disconnected(client):
-    # La fonction Disconnected sera appelée lorsque le client se déconnecte.
-    print("Déconnecté d'Adafruit IO !")
-
-# pylint: disable=unused-argument
-def message(client, feed_id, payload):
-    # La fonction message sera appelée lorsque le flux auquel on est abonné a une nouvelle valeur.
-    # Le paramètre feed_id identifie le flux, et le paramètre payload contient la nouvelle valeur.
-    print("Le flux {0} a reçu une nouvelle valeur : {1}".format(feed_id, payload))
-    if(payload == "1"):
-        boutonReset = "1"
-        print(boutonReset)
-    else:
-        boutonReset = "0"
-    
-    if(payload == "faren"):
-        boutonToggle1 = "faren"
-    else:
-        boutonToggle1 = "celci"
-    # pylint: disable=unused-argument
-
-
-def battery_msg(client, topic, message):
-    # print l'état du bouton
-    print(message)
-    
-
+def message(client, topic, message):
+    print("New message on topic {0}: {1}".format(topic, message))
 
 def connecter_mqtt():
     # Connexion au WIFI à partir des informations de settings.toml
+
     try:
         if os.getenv("AIO_USERNAME") and os.getenv("AIO_KEY"):
             secrets = {
@@ -109,40 +75,28 @@ def connecter_mqtt():
             "Les informations pour la connexion au WIFI et pour Adafruit IO ne sont pas disponibles dans le fichier settings.toml")
         raise
 
-    aio_username = secrets["aio_username"]
-    aio_key = secrets["aio_key"]
 
     if not wifi.radio.connected:
         print("Connexion à %s" % secrets["ssid"])
         wifi.radio.connect(secrets["ssid"], secrets["password"])
         print("Connecté à %s!" % secrets["ssid"])
-
-    #global pour pouvoir l'utiliser dans main.py
-    global pool
     
+   
     pool = socketpool.SocketPool(wifi.radio)
-
-    mqtt = MQTT.MQTT(socket_pool=pool,
-                    username=secrets["aio_username"],
-                    password=secrets["aio_key"],
-                    ssl_context=ssl.create_default_context(),
-                    broker="io.adafruit.com",
-                    is_ssl=True,
-                    port=8883)
-    io = IO_MQTT(mqtt)
-
-    io.add_feed_callback("projet-2-bouton", battery_msg)
     
+    mqtt_client = MQTT.MQTT(
+        broker="10.170.51.21",
+        socket_pool=pool,
+        port=1883
+        )
 
-    io.on_connect = connected
-    io.on_disconnect = disconnected
-    io.on_subscribe = subscribe
-    io.on_unsubscribe = unsubscribe
-    io.on_message = message
-    io.on_battery_msg = battery_msg
-    
-    
-    io.connect()
-    return io
-
-
+    # Connect callback handlers to mqtt_client
+    mqtt_client.on_connect = connect
+    mqtt_client.on_disconnect = disconnect
+    mqtt_client.on_subscribe = subscribe
+    mqtt_client.on_unsubscribe = unsubscribe
+    mqtt_client.on_publish = publish
+    mqtt_client.on_message = message
+   
+    mqtt_client.connect()
+    return mqtt_client
