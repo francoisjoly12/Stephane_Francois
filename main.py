@@ -13,8 +13,7 @@ from collections import OrderedDict
 import adafruit_ntp
 import rtc
 
-#************TTTTTTEEEEESSSSTTTTTT//*********
-#test 2#
+
 # Mise en place des objets de la carte Arduino
 i2c = board.I2C()
 rtc = pcf8523.PCF8523(i2c)
@@ -23,7 +22,7 @@ bmp280.sea_level_pressure = 1016.10
 led = digitalio.DigitalInOut(board.IO11)
 led.direction = digitalio.Direction.OUTPUT
 ecran = projet2.ecran()
-#test3
+
 # Initialisation de la carte SD
 try:
     spi = busio.SPI(board.SCK, board.MOSI, board.MISO)
