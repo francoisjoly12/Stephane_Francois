@@ -20,8 +20,8 @@ class Ecran:
         self.splash.append(self.text_area)
 
     def refresh_text(self, humidity, gas_level, door_state, fan_state):
-        self.text_area.text = "Humidité: {:.1f}%\nNiveau Gaz: {:.1f}ppm\nPorte: {}\nVentillateur: {}".format(
-                    humidity, gas_level, door_state, fan_state)
+        self.text_area.text = "Hum: {:.1f}%\tGaz: {:.1f} ppm\nPorte: {}\tVent: {}\nMode: {}\nMQTT: {}".format(
+                    humidity, gas_level, door_state, fan_state, mode,connection)
         self.display.refresh()
 
 
@@ -29,8 +29,11 @@ last_display_time = time.monotonic()
 last_measurement_time = time.monotonic()
 humidity = 0
 gas_level = 0
-door_state = "Ouvert"
-fan_state = "Ventillation"
+door_state = "Up"
+fan_state = "Push"
+mode = "auto"
+connection= "connecté"
+
 ecran = Ecran()
 
 while True:
