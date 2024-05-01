@@ -8,6 +8,8 @@
 # -----------------------------------------------------------------------------
 from tkinter import * 
 #from gaz_sensor import gas_value
+#gas_value1 = gaz_sensor.gas_value
+gas_value1 = 40000
 
 class Application(Frame):
     def __init__(self, master):
@@ -50,13 +52,14 @@ class Application(Frame):
         self.button2 = Button(self,text='Auto')#, command=self.Auto)
         self.button2.grid(row =0, column = 4, sticky=W, columnspan=1)
 
-        #gas_value = gaz_sensor.gas_value
+        gas_value = gas_value1
         self.number2.delete(0, END)
-        #self.number2.insert(0, gas_value)
+        self.number2.insert(0, gas_value1)
         
 root = Tk()
 root.title('Interface')
 root.geometry('400x600')
 app = Application(root)
 app.mainloop()
+
 
