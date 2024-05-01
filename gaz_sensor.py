@@ -61,4 +61,4 @@ if __name__ == '__main__':
         gas_detector.cleanup()
 
         
-#Note: blanc dans d11 brun dans a0
+#Note: Dans A3

@@ -29,3 +29,6 @@ laser_detector.last_display_time = time.monotonic()
 
 while True:
     laser_detector.detect()
+
+
+#Note:  trasmitter D4 receiver D3

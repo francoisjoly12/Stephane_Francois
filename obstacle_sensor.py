@@ -13,7 +13,7 @@ class ObstacleSensor:
         return not self.sensor.value
 
 def main():
-    obstacle_sensor = ObstacleSensor(board.IO16)  # Utilisation de la broche D11
+    obstacle_sensor = ObstacleSensor(board.IO12)  # Utilisation de la broche D11
     
     
     try:
@@ -32,7 +32,4 @@ if __name__ == "__main__":
     main()
 
 
-#Note : brancher rouge 5v, noir ground, jaune D11(IO16) dans l'exemple.
-# Le tout fonctionne bien.
-# Source https://github.com/hipi-io/HiPi-Sensor-kit-v4.0/blob/main/Python/29_ir_obstacle.py
-# modifié et adapté en classe par moi-même
+#Note : brancher D7(IO12) 

@@ -5,7 +5,7 @@ import busio
 import adafruit_dht
 from adafruit_motor.motor import DCMotor
 from pwmio import PWMOut
-import projet_Final
+
 
 dht = adafruit_dht.DHT11(board.IO8)
 pvm1 = PWMOut(board.IO13)
@@ -36,3 +36,5 @@ while True:
         #print(dht.humidity)
 
     motor.throttle = throttle
+
+    # dans D8 + VCC jaune dans A0
