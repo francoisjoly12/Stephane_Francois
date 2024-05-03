@@ -1,11 +1,4 @@
-#!/usr/bin/python3
-# -----------------------------------------------------------------------------
-# Script : [labo7]
-# Auteur : [Francois Joly]
-# Description : simple calculator
-# Paramètres : aucun
-# Date : [Date courante (2024-04-21)]
-# -----------------------------------------------------------------------------
+#Tkinter.py
 from tkinter import * 
 #from gaz_sensor import gas_value
 #gas_value1 = gaz_sensor.gas_value

@@ -1,3 +1,4 @@
+#affichage_écran.py
 import board
 import displayio
 import terminalio
@@ -19,26 +20,30 @@ class Ecran:
         self.text_area = label.Label(terminalio.FONT, text=self.text, color=0xFFFFFF, x=5, y=10)
         self.splash.append(self.text_area)
 
-    def refresh_text(self, humidity, gas_level, door_state, fan_state):
-        self.text_area.text = "Hum: {:.1f}%\tGaz: {:.1f} ppm\nPorte: {}\tVent: {}\nMode: {}\nMQTT: {}".format(
-                    humidity, gas_level, door_state, fan_state, mode,connection)
+    def refresh_text(self, humidity, gas_level, door_state, fan_state, mode, connection):
+        self.text_area.text = "Hum: {:.1f}% Vent: {}\nPorte: {} MQTT: {}\nMode: {}\nGaz: {:.1f} ppm".format(
+                    humidity, fan_state, door_state,connection , mode,gas_level)
         self.display.refresh()
 
 
-last_display_time = time.monotonic()
-last_measurement_time = time.monotonic()
-humidity = 0
-gas_level = 0
-door_state = "Up"
-fan_state = "Push"
-mode = "auto"
-connection= "connecté"
 
-ecran = Ecran()
 
-while True:
-    current_time = time.monotonic()
-    if current_time - last_display_time > 0.5:
-        last_display_time = current_time
 
-    ecran.refresh_text(humidity, gas_level, door_state, fan_state)
+
+# Test de fonctionnement
+#last_display_time = time.monotonic()
+#last_measurement_time = time.monotonic()
+#humidity = 0
+#gas_level = 0
+#door_state = "Up"
+#fan_state = "Push"
+#mode = "auto"
+#connection= "connecté"
+
+#ecran = Ecran()
+
+#while True:
+#    current_time = time.monotonic()
+#    if current_time - last_display_time > 0.5:
+#        last_display_time = current_time
+#    ecran.refresh_text(humidity, gas_level, door_state, fan_state)

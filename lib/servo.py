@@ -1,7 +1,6 @@
+#servo.py
 import board
-import digitalio
 import time
-import busio
 from adafruit_motor import servo
 import pwmio
 

@@ -1,14 +1,4 @@
-import storage
-import pcf8523
-import board
-import busio
-import digitalio
-import time
-import adafruit_bmp280
-import projet2
-import json
-import adafruit_sdcard
-
+#sd_card.py
 import board
 import digitalio
 import busio
