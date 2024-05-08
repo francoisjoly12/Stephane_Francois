@@ -1,3 +1,4 @@
+# obstacle_sensor.py
 import digitalio
 
 class ObstacleSensor:

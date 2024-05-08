@@ -1,3 +1,4 @@
+#gas_sensor.py
 import time
 import math
 import digitalio
@@ -5,7 +6,7 @@ import board
 from analogio import AnalogIn
 
 class GasDetector:
-    def __init__(self): #buzzer_pin):
+    def __init__(self): 
         
         self.status = 1
         self.count = 0

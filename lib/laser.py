@@ -1,5 +1,4 @@
-import time
-import board
+# laser.py
 import digitalio
 
 class LaserDetector:
@@ -7,16 +6,14 @@ class LaserDetector:
         self.transmitter_pin = digitalio.DigitalInOut(transmitter_pin)
         self.transmitter_pin.direction = digitalio.Direction.OUTPUT
         self.transmitter_pin.value = True
-        
         self.receiver_pin = digitalio.DigitalInOut(receiver_pin)
         self.receiver_pin.direction = digitalio.Direction.INPUT
         
     def alert(self):
-        print("Alerte! Quelqu'un passe devant le laser.")
+        print("Alerte! L'objet de valeur à été volé.")
         
     def detect(self):
-        current_time = time.monotonic()
-        if current_time - self.last_display_time > 0.5:
-            self.last_display_time = current_time
-            if not self.receiver_pin.value:  
+        if self.receiver_pin.value:  
+                #print(self.receiver_pin.value)
                 self.alert()
+                return True

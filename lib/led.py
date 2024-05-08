@@ -12,13 +12,13 @@ class FlashingLED:
         self.temps_lent = 0.5  
         self.last_time = time.monotonic()
 
-    async def flash_rapide(self, current_time):
+    def flash_rapide(self, current_time):
         if (current_time - self.last_time) >= self.temps_rapide:
             self.last_time = current_time
             self.etat = not self.etat
             self.led.value = self.etat
 
-    async def flash_lent(self):
+    def flash_lent(self):
         if (time.monotonic() - self.last_time) >= self.temps_lent:
             self.last_time = time.monotonic()
             self.etat = not self.etat

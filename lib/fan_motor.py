@@ -1,10 +1,10 @@
+#fan_motor.py
 import board
-#motor.py
 import time
 from adafruit_motor.motor import DCMotor
 from pwmio import PWMOut
 
-class motor:
+class fan_motor:
     def __init__(self, motor_pvm1, motor_pvm2):
         self.motor = DCMotor(PWMOut( motor_pvm1), PWMOut(motor_pvm2))
         self.throttle = 0
