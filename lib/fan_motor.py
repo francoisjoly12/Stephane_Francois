@@ -6,29 +6,35 @@ from pwmio import PWMOut
 
 class fan_motor:
     def __init__(self, motor_pvm1, motor_pvm2):
-        self.motor = DCMotor(PWMOut( motor_pvm1), PWMOut(motor_pvm2))
+        self.motor = DCMotor(PWMOut(motor_pvm1), PWMOut(motor_pvm2))
         self.throttle = 0
-        self.time1 = time.monotonic()
+        #self.time1 = time.monotonic()
 
-    def run(self, humidity):
-        while True:
-            if(time.monotonic() - self.time1 > 1):
-                self.time1 = time.monotonic()
-                if humidity < 20:
-                    self.throttle = 0
-                elif humidity < 25:
-                    self.throttle = 0.3
-                elif humidity < 30:
-                    self.throttle = 0.4
-                elif humidity < 35:
-                    self.throttle = 0.5
+    def run(self, humidity, gas):
+        #while True:
+            #if(time.monotonic() - self.time1 > 1):
+                #self.time1 = time.monotonic()
+                
+                #print("humidity", humidity)
+                #print("gas",  gas)
+                if gas > 10:
+                    self.throttle = -0.8
                 elif humidity < 40:
-                    self.throttle = 0.6
+                    self.throttle = 0
                 elif humidity < 45:
-                    self.throttle = 0.7
+                    self.throttle = 0.5
                 elif humidity < 50:
+                    self.throttle = 0.6
+                elif humidity < 55:
+                    self.throttle = 0.7
+                elif humidity > 55:
                     self.throttle = 0.8
+                
+                self.motor.throttle = self.throttle
+                return self.throttle
+
+                #print("throttle", self.throttle)
                 #print("Humidity:", self.dht.humidity)
                 #print("Throttle:", self.throttle)
-            
-            #self.motor.throttle = self.throttle
+
+
