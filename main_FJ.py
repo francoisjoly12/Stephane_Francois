@@ -1,7 +1,7 @@
 import board
 import time
 import adafruit_dht
-#from affichage_ecran import Ecran
+from affichage_ecran import Ecran
 #from buzzer import BuzzerController
 from gaz_sensor import GasDetector
 #from laser import LaserDetector
@@ -12,7 +12,7 @@ from fan_motor import fan_motor
 #from led import FlashingLED
 #import asyncio
 
-#ecran = Ecran()
+ecran = Ecran()
 #buzzer = BuzzerController(board.IO10)   # Dans D5
 gas_detector = GasDetector()   # Dans A3
 #laser_detector = LaserDetector(transmitter_pin=board.IO9, receiver_pin=board.IO7)   # Dans D4 et D2
@@ -34,15 +34,18 @@ def main():
                 last_display_time = time.monotonic()
                 humidity = humidite.humidity
                 gas_level = gas_detector.get_value()
-                
-
+                obstacle = obstacle_sensor.detect()
+                print(obstacle)
                 if(gas_level > 10):
                     fan_state = "Pull"
                 elif(humidity > 40):
                     fan_state = "Push"
                 else:
                     fan_state = "off"
-                obstacle = obstacle_sensor.detect()
+
+                if(obstacle == True):
+                    fan_state = "bloc"
+                
                 #fait tourné le moteur en fontion de l'humidité et du gas
                 
                 moteur.run(humidity, gas_level, obstacle)
@@ -50,7 +53,7 @@ def main():
                 door_state = "Up"
                 mode = "Auto"
                 connection = "Off"
-                #ecran.refresh_text(humidity, gas_level, door_state, fan_state, mode, connection)
+                ecran.refresh_text(humidity, gas_level, door_state, fan_state, mode, connection)
 
 
 
