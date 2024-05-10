@@ -1,22 +1,22 @@
 import board
 import time
 import adafruit_dht
-from affichage_ecran import Ecran
+#from affichage_ecran import Ecran
 #from buzzer import BuzzerController
 from gaz_sensor import GasDetector
 #from laser import LaserDetector
-#from obstacle_sensor import ObstacleSensor
+from obstacle_sensor import ObstacleSensor
 from fan_motor import fan_motor
 #from servo import ServoController
 #from sd_card import SDLogger
 #from led import FlashingLED
-import asyncio
+#import asyncio
 
-ecran = Ecran()
+#ecran = Ecran()
 #buzzer = BuzzerController(board.IO10)   # Dans D5
 gas_detector = GasDetector()   # Dans A3
 #laser_detector = LaserDetector(transmitter_pin=board.IO9, receiver_pin=board.IO7)   # Dans D4 et D2
-#obstacle_sensor = ObstacleSensor(board.IO12)    # Dans D7
+obstacle_sensor = ObstacleSensor(board.IO12)    # Dans D7
 moteur = fan_motor(board.IO13, board.IO14)    # Dans D8 et A0 pour 5V
 #servo_controller = ServoController(servo_pin=board.A1)  # Dans A1
 #sd_logger = SDLogger(sd_cs_pin=board.IO15)  # Sur le top
@@ -35,21 +35,22 @@ def main():
                 humidity = humidite.humidity
                 gas_level = gas_detector.get_value()
                 
-                #affichage pour les états du fan
+
                 if(gas_level > 10):
                     fan_state = "Pull"
                 elif(humidity > 40):
                     fan_state = "Push"
                 else:
                     fan_state = "off"
-                
+                obstacle = obstacle_sensor.detect()
                 #fait tourné le moteur en fontion de l'humidité et du gas
-                moteur.run(humidity, gas_level)
+                
+                moteur.run(humidity, gas_level, obstacle)
 
                 door_state = "Up"
                 mode = "Auto"
                 connection = "Off"
-                ecran.refresh_text(humidity, gas_level, door_state, fan_state, mode, connection)
+                #ecran.refresh_text(humidity, gas_level, door_state, fan_state, mode, connection)
 
 
 

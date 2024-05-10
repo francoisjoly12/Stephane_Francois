@@ -10,13 +10,14 @@ class fan_motor:
         self.throttle = 0
         #self.time1 = time.monotonic()
 
-    def run(self, humidity, gas):
+    def run(self, humidity, gas, obstacle):
         #while True:
             #if(time.monotonic() - self.time1 > 1):
                 #self.time1 = time.monotonic()
                 
                 #print("humidity", humidity)
                 #print("gas",  gas)
+                
                 if gas > 10:
                     self.throttle = -0.8
                 elif humidity < 40:
@@ -29,7 +30,10 @@ class fan_motor:
                     self.throttle = 0.7
                 elif humidity > 55:
                     self.throttle = 0.8
-                
+                    
+                if obstacle:
+                     self.throttle = 0
+
                 self.motor.throttle = self.throttle
                 return self.throttle
 
