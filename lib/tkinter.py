@@ -1,5 +1,5 @@
 #Tkinter.py
-from tkinter import * 
+from tkinter import *
 #from gaz_sensor import gas_value
 #gas_value1 = gaz_sensor.gas_value
 gas_value1 = 40000
@@ -47,7 +47,7 @@ class Application(Frame):
 
         gas_value = gas_value1
         self.number2.delete(0, END)
-        self.number2.insert(0, gas_value1)
+        self.number2.insert(0, gas_value)
         
 root = Tk()
 root.title('Interface')
