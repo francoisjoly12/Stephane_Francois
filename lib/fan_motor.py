@@ -8,16 +8,8 @@ class fan_motor:
     def __init__(self, motor_pvm1, motor_pvm2):
         self.motor = DCMotor(PWMOut(motor_pvm1), PWMOut(motor_pvm2))
         self.throttle = 0
-        #self.time1 = time.monotonic()
 
     def run(self, humidity, gas, obstacle):
-        #while True:
-            #if(time.monotonic() - self.time1 > 1):
-                #self.time1 = time.monotonic()
-                
-                #print("humidity", humidity)
-                #print("gas",  gas)
-                
                 if gas > 10:
                     self.throttle = -0.8
                 elif humidity < 40:

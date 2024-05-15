@@ -2,8 +2,6 @@
 from adafruit_motor import servo
 import pwmio
 
-
-
 class ServoController:
     def __init__(self, servo_pin):
         pwm = pwmio.PWMOut(servo_pin, duty_cycle=2 ** 15, frequency=50, )

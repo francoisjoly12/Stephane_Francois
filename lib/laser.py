@@ -14,6 +14,5 @@ class LaserDetector:
         
     def detect(self):
         if self.receiver_pin.value:  
-                #print(self.receiver_pin.value)
                 self.alert()
                 return True

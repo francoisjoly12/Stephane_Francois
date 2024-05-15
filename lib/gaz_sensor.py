@@ -6,30 +6,9 @@ import board
 from analogio import AnalogIn
 
 class GasDetector:
-    def __init__(self): 
-        
-        #self.status = 1
+    def __init__(self, sensor_pin): 
         self.count = 0
-        self.adc = AnalogIn(board.A4)
-
-    # def print_status(self, status):
-    #     if status == 1:
-    #         print ('')
-    #         print ('   *********')
-    #         print ('   * Safe~ *')
-    #         print ('   *********')
-    #         print ('')
-    #     elif status == 0:
-    #         print ('')
-    #         print ('   ***************')
-    #         print ('   * Danger Gas! *')
-    #         print ('   ***************')
-    #         print ('')
-
-    # def loop(self):
-    #     while True:
-    #         gas_value = self.adc.value
-    #         print(v)
+        self.adc = sensor_pin
 
     def get_value(self):
         #-5000 pour avoir une valeur ambiante proche de 0% et (100 / 47600) pour avoir une valeur en pourcentage en fontion du range.

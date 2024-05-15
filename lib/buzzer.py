@@ -24,7 +24,6 @@ class BuzzerController:
             self.etat = not self.etat  
             self.buzzer.duty_cycle = 2**15 if self.etat else 0 
 
- 
     def buzz(self, current_time):
         if (current_time - self.last_time > 0.5):
             self.last_time = current_time
