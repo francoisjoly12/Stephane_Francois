@@ -49,7 +49,7 @@ def connecter_mqtt():
     try:
         pool = socketpool.SocketPool(wifi.radio)
         mqtt_client = MQTT.MQTT(
-            broker="192.168.0.150",
+            broker="10.170.17.97",
             socket_pool=pool,
             port=1883
         )

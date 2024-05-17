@@ -8,7 +8,7 @@ from analogio import AnalogIn
 class GasDetector:
     def __init__(self, sensor_pin): 
         self.count = 0
-        self.adc = sensor_pin
+        self.adc = AnalogIn(sensor_pin)
 
     def get_value(self):
         #-5000 pour avoir une valeur ambiante proche de 0% et (100 / 47600) pour avoir une valeur en pourcentage en fontion du range.

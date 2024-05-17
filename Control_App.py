@@ -147,6 +147,6 @@ class Application(Frame):
 if __name__ == "__main__":
     root = Tk()
     root.title('Control_App')
-    root.geometry("700x950")
+    root.geometry("650x750")
     app = Application(root)
     app.mainloop()
