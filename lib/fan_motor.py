@@ -1,6 +1,4 @@
 #fan_motor.py
-import board
-import time
 from adafruit_motor.motor import DCMotor
 from pwmio import PWMOut
 
@@ -28,9 +26,4 @@ class fan_motor:
 
                 self.motor.throttle = self.throttle
                 return self.throttle
-
-                #print("throttle", self.throttle)
-                #print("Humidity:", self.dht.humidity)
-                #print("Throttle:", self.throttle)
-
 

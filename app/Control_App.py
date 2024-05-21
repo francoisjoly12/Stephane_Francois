@@ -1,6 +1,6 @@
 from tkinter import *
 import random
-import connect_mosquitto
+import paho.mqtt.client as mqtt
 
 class Application(Frame):
     def __init__(self, master):

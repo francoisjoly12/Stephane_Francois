@@ -22,7 +22,7 @@ def publish(client, userdata, topic, pid):
 def message(client, topic, message):
     print("New message on topic {0}: {1}".format(topic, message))
 
-def connect_wifi():
+def connecter_mqtt():
     try:
         if os.getenv("AIO_USERNAME") and os.getenv("AIO_KEY"):
             secrets = {
@@ -32,7 +32,7 @@ def connect_wifi():
                 "password": os.getenv("CIRCUITPY_WIFI_PASSWORD"),
             }
         else:
-            raise ImportError("Missing environment variables")
+            raise ImportError("Missing environment variables for Adafruit IO credentials.")
     except ImportError as e:
         print(e)
         raise
@@ -46,11 +46,10 @@ def connect_wifi():
         print(f"Wi-Fi connection failed: {e}")
         raise
 
-def connect_mqtt():
     try:
         pool = socketpool.SocketPool(wifi.radio)
         mqtt_client = MQTT.MQTT(
-            broker="192.168.0.150",
+            broker="10.170.17.97",
             socket_pool=pool,
             port=1883
         )
@@ -67,6 +66,3 @@ def connect_mqtt():
     except Exception as e:
         print(f"MQTT connection failed: {e}")
         raise
-
-def is_mqtt_connected(mqtt_client):
-    return mqtt_client.is_connected()

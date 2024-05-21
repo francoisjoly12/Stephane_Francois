@@ -4,7 +4,6 @@ import displayio
 import terminalio
 from adafruit_display_text import label
 import adafruit_displayio_ssd1306
-import time
 
 class Ecran:
 
@@ -24,26 +23,3 @@ class Ecran:
         self.text_area.text = "Hum: {:.1f}% Vent: {}\nPorte: {} MQTT: {}\nMode: {}\nGaz: {:.1f} ppm".format(
                     humidity, fan_state, door_state,connection , mode,gas_level)
         self.display.refresh()
-
-
-
-
-
-
-# Test de fonctionnement
-#last_display_time = time.monotonic()
-#last_measurement_time = time.monotonic()
-#humidity = 0
-#gas_level = 0
-#door_state = "Up"
-#fan_state = "Push"
-#mode = "auto"
-#connection= "connecté"
-
-#ecran = Ecran()
-
-#while True:
-#    current_time = time.monotonic()
-#    if current_time - last_display_time > 0.5:
-#        last_display_time = current_time
-#    ecran.refresh_text(humidity, gas_level, door_state, fan_state)
