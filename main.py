@@ -149,7 +149,8 @@ def main():
     last_detect_time = time.monotonic()
     fin_alarm_timer = time.monotonic()
     alarm_active = False
-    
+    alarm_mqtt=""
+        
     # Première valeur des capteurs
     if humidite:
         humidity = humidite.humidity
@@ -163,7 +164,7 @@ def main():
     if mosquitto:
         connection = "On"
     else:
-        connection = "off"
+        connection = "Off"
     gas_level = 0
 
     #Topics
@@ -171,23 +172,25 @@ def main():
     mqtt_topic_hum = 'hum'
     mqtt_topic_alarm = 'alarm'
     mqtt_topic_door= 'door'
-    mqtt_topic_fan= 'fan'
+    mqtt_topic_fan_speed= 'fan_speed'
+    mqtt_topic_mode='mode'
+    mqtt_topic_fan_mode='fan_mode'
         
     # Subscribe
     if mosquitto:
+        #mqtt_client.subscribe(mqtt_topic_mode)
         if humidite:
             mqtt_client.subscribe(mqtt_topic_hum)
         if gas_detector:
             mqtt_client.subscribe(mqtt_topic_gas)
         if alarm_active:
             mqtt_client.subscribe(mqtt_topic_alarm)
-        if moteur:
-            mqtt_client.subscribe(mqtt_topic_door)
+        # if moteur:
+        #     mqtt_client.subscribe(mqtt_topic_door)
         if laser_detector and servo_controller:
-            mqtt_client.subscribe(mqtt_topic_fan)
+            mqtt_client.subscribe(mqtt_topic_fan_mode)
+            mqtt_client.subscribe(mqtt_topic_fan_speed)
         
-    
-    
     # Boucle principale
     try:
         while True:
@@ -201,6 +204,11 @@ def main():
             except Exception as e:
                 print("Une erreur est survenue :", e)
             
+            if alarm_active:
+                alarm_mqtt= "Alarme"
+            else:
+                alarm_mqtt=""
+
             # Prise de données
             if time.monotonic() - last_detect_time >= 1:
                 last_detect_time = time.monotonic()
@@ -221,7 +229,9 @@ def main():
                         fan_state = "off"
 
                     if(obstacle == True):
-                        fan_state = "bloc"
+                        fan_state = "Bloc"
+                    
+                    fan_speed=moteur.throttle
 
 
                 # Fermeture de porte suite à la détection du vol
@@ -257,12 +267,13 @@ def main():
                             mqtt_client.publish(mqtt_topic_gas, gas_level)
                         if humidite:
                             mqtt_client.publish(mqtt_topic_hum, humidity)
-                        if alarm_active:
-                            mqtt_client.publish(mqtt_topic_alarm, "Alarme")
+                        if led and buzzer:
+                            mqtt_client.publish(mqtt_topic_alarm, alarm_mqtt)
                         if moteur:
-                            mqtt_client.publish(mqtt_topic_fan, fan_state)
-                        if laser_detector and servo_controller:
-                             mqtt_client.publish(mqtt_topic_door, door_state)   
+                            mqtt_client.publish(mqtt_topic_fan_mode, fan_state)
+                            mqtt_client.publish(mqtt_topic_fan_speed, fan_speed)
+                        # if laser_detector and servo_controller:
+                        #      mqtt_client.publish(mqtt_topic_door, door_state)   
                     except Exception as e:
                         print("Erreur lors de la publication MQTT:", e)
                         connected =False
