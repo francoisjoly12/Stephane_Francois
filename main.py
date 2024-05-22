@@ -15,10 +15,31 @@ from sd_card import SDLogger
 from led import FlashingLED
 from connect_mosquitto import connect_wifi, connect_mqtt, is_mqtt_connected
 
+# variables globales
+connected = False
+mosquitto = False
+sd_logger = None
+mqtt_client = None
+ecran = None
+buzzer = None
+gas_detector = None
+laser_detector = None
+obstacle_sensor = None
+moteur = None
+servo_controller = None
+led = None
+humidite = None
 
-# Initialisation de la carte sd
-sd_logger = SDLogger(sd_cs_pin=board.IO15)  # Sur le top
-sd_logger.initialize()
+# Initialisation de la carte sd et log message
+def initialize_sd_logger():
+    global sd_logger
+    sd_logger = SDLogger(sd_cs_pin=board.IO15)  # Sur le top
+    sd_logger.initialize()
+
+def handle_error(message, error):
+    print(message, error)
+    if sd_logger:
+        sd_logger.log_data(message)
 
 # Initialisation des entrées et sorties
 def check_instance(obj, cls, name):
@@ -31,112 +52,81 @@ def check_instance(obj, cls, name):
         return None
 
 # Connexion WiFi
-try:
-    connect_wifi()
-    print("Connecté au WiFi!")
-    connected =True
-except  Exception as e:
-    print("Impossible de se connecter au WiFi:", e)
-    connected =False
-    mosquitto=False
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion Internet")
+def connect_to_wifi():
+    global connected
+    global mosquitto
+    try:
+        connect_wifi()
+        print("Connecté au WiFi!")
+        connected =True
+    except  Exception as e:
+        handle_error("Impossible de se connecter au WiFi:", e)
 
 # MQTT
-mqtt_client = None
-if connected:
-    try:
-        mqtt_client = connect_mqtt()
-        mosquitto=True
-    except Exception as e:
-        print("Impossible de se connecter au broker MQTT:", e)
-        if sd_logger:
-            sd_logger.log_data("Perte de connexion MQTT")
-        mosquitto=False
-# mosquitto -v -c "C:\Program Files\mosquitto\mosquitto.conf"
+def connect_to_mqtt():
+    global mqtt_client, mosquitto
+    if connected:
+        try:
+            mqtt_client = connect_mqtt()
+            mosquitto=True
+        except Exception as e:
+           handle_error("Impossible de se connecter au broker MQTT:", e)
+    # mosquitto -v -c "C:\Program Files\mosquitto\mosquitto.conf"
 
 # Initialisation des capteurs
-try:
-    ecran = Ecran()
-    ecran = check_instance(ecran, Ecran, "écran")
-except NameError as e:
-    print("Erreur d'écran",e)
-    ecran = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec l'écran")
+def initialize_sensors():
+    global ecran, buzzer, gas_detector, laser_detector, obstacle_sensor, moteur, servo_controller, led, humidite
+    try:
+        ecran = Ecran()
+        ecran = check_instance(ecran, Ecran, "écran")
+    except NameError as e:
+        handle_error("Erreur d'écran", e)
 
-try:
-    buzzer = BuzzerController(board.IO10)   # Dans D5
-    buzzer = check_instance(buzzer, BuzzerController, "Buzzer")
-except (NameError, RuntimeError) as e:
-    print("Erreur de Buzzer:", e)
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le buzzer")
-    buzzer = None
+    try:
+        buzzer = BuzzerController(board.IO10)   # Dans D5
+        buzzer = check_instance(buzzer, BuzzerController, "Buzzer")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de buzzer", e)
 
-try:
-    gas_detector = GasDetector(board.A4)   # Dans A4
-    gas_detector = check_instance(gas_detector, GasDetector, "gas detector")
-except (NameError, RuntimeError) as e:
-    print("Erreur de gas detector:", e)
-    gas_detector = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le gax detector")
-    
-try:
-    laser_detector = LaserDetector(transmitter_pin=board.IO9, receiver_pin=board.IO7)   # Dans D4 et D2
-    laser_detector = check_instance(laser_detector, LaserDetector, "capteur laser")
-except (NameError, RuntimeError) as e:
-    print("Erreur de capteur laser:", e)
-    laser_detector = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le laser")
+    try:
+        gas_detector = GasDetector(board.A4)   # Dans A4
+        gas_detector = check_instance(gas_detector, GasDetector, "gas detector")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de gas detector", e)
 
-try:
-    obstacle_sensor = ObstacleSensor(board.IO12)    # Dans D7
-    obstacle_sensor = check_instance(obstacle_sensor, ObstacleSensor, "capteur d'obstacle")
-except (NameError, RuntimeError) as e:
-    print("Erreur de capteur d'obstacle:", e)
-    obstacle_sensor = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le capteur d'obstacle")
+    try:
+        laser_detector = LaserDetector(transmitter_pin=board.IO9, receiver_pin=board.IO7)   # Dans D4 et D2
+        laser_detector = check_instance(laser_detector, LaserDetector, "capteur laser")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de laser", e)
 
-try:
-    moteur = fan_motor(board.IO13, board.IO14)    # Dans D8 et A0 pour 5V
-    moteur = check_instance(moteur, fan_motor, "moteur")
-except (NameError, RuntimeError) as e:
-    print("Erreur de moteur:", e)
-    moteur = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le moteur")
+    try:
+        obstacle_sensor = ObstacleSensor(board.IO12)    # Dans D7
+        obstacle_sensor = check_instance(obstacle_sensor, ObstacleSensor, "capteur d'obstacle")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur d'obstacle sensor", e)
+    try:
+        moteur = fan_motor(board.IO13, board.IO14)    # Dans D8 et A0 pour 5V
+        moteur = check_instance(moteur, fan_motor, "moteur")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de fan motor", e)
 
-try:
-    servo_controller = ServoController(servo_pin=board.A1)  # Dans A1
-    servo_controller = check_instance(servo_controller, ServoController, "Servo")
-except (NameError, RuntimeError) as e:
-    print("Erreur de Servomoteur:", e)
-    servo_controller = None
-    
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le servomoteur")
+    try:
+        servo_controller = ServoController(servo_pin=board.A1)  # Dans A1
+        servo_controller = check_instance(servo_controller, ServoController, "Servo")
+    except (NameError, RuntimeError) as e:
+       handle_error("Erreur de servomoteur", e)
+    try:
+        led = FlashingLED(board.IO11)   # D6 intégré
+        led = check_instance(led, FlashingLED, "LED")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de LED", e)
 
-try:
-    led = FlashingLED(board.IO11)   # D6 intégré
-    led = check_instance(led, FlashingLED, "LED")
-except (NameError, RuntimeError) as e:
-    print("Erreur de LED:", e)
-    led = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le LED")
-
-try:
-    humidite = adafruit_dht.DHT11(board.IO8)    # D3 intégré
-    humidite = check_instance(humidite, adafruit_dht.DHT11, "capteur DHT")
-except (NameError, RuntimeError) as e:
-    print("Erreur de capteur DHT:", e)
-    humidite = None
-    if sd_logger:
-        sd_logger.log_data("Perte de connexion avec le capteur DHT")
+    try:
+        humidite = adafruit_dht.DHT11(board.IO8)    # D3 intégré
+        humidite = check_instance(humidite, adafruit_dht.DHT11, "capteur DHT")
+    except (NameError, RuntimeError) as e:
+        handle_error("Erreur de DHT", e)
 
 
 
@@ -144,13 +134,19 @@ def main():
     global connected
     global mosquitto
    
+    
    # Variables de temps et d'état
     last_display_time = time.monotonic()
     last_detect_time = time.monotonic()
     fin_alarm_timer = time.monotonic()
     alarm_active = False
     alarm_mqtt=""
-        
+
+    initialize_sd_logger()
+    connect_to_wifi()
+    connect_to_mqtt()
+    initialize_sensors()
+
     # Première valeur des capteurs
     if humidite:
         humidity = humidite.humidity
