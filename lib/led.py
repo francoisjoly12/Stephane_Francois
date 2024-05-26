@@ -1,7 +1,6 @@
 #led.py
 import digitalio
 import time
-import asyncio
 
 class FlashingLED:
     def __init__(self, led_pin):

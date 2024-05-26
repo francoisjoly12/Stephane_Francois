@@ -1,3 +1,4 @@
+#connect_mosquitto.py
 import os
 import socketpool
 import wifi
@@ -22,6 +23,55 @@ def publish(client, userdata, topic, pid):
 def message(client, topic, message):
     print("New message on topic {0}: {1}".format(topic, message))
 
+    # Associez les callbacks en fonction du topic
+    if topic == 'alarm':
+        alarm_callback(client, topic, message)
+    elif topic == 'fan_mode':
+        fan_mode_callback(client, topic, message)
+    elif topic == 'app_mode':
+        mode_callback(client, topic, message)
+    elif topic == 'door':
+        door_callback(client, topic, message)
+
+# Fonctions de rappel pour topic MQTT
+def door_callback(client, topic, msg):
+    global door_state
+    if msg == "Up":
+        door_state= True
+    elif msg == "Down":
+        door_state=False
+    print(f"Door status updated: {door_state}")
+
+def alarm_callback(client, topic, msg):
+    global alarm_active
+    global app_alarm
+    if msg == "Alarme" or msg == "On":
+        alarm_active = True
+    else:
+        alarm_active = False
+    app_alarm =alarm_active
+    print(f"Alarm status updated: {alarm_active}")
+
+def fan_mode_callback(client, topic, msg):
+    global fan_mode
+    global fan_on
+    if msg =="On" or msg =="Push" or msg == "Pull"or msg == "Bloc":
+        fan_on = True
+    else:
+        fan_on=False
+    fan_mode = msg
+    print(f"Fan mode updated: {fan_mode}")
+
+def mode_callback(client, topic, msg):
+    global mode
+    global switch
+    mode = msg
+    if mode == "Manuel":
+        switch=True
+    else:
+        switch=False
+    print(f"App mode updated: {mode}")
+    
 def connect_wifi():
     try:
         if os.getenv("AIO_USERNAME") and os.getenv("AIO_KEY"):
@@ -52,7 +102,8 @@ def connect_mqtt():
         mqtt_client = MQTT.MQTT(
             broker="192.168.0.150",
             socket_pool=pool,
-            port=1883
+            port=1883,
+            keep_alive=60
         )
 
         mqtt_client.on_connect = connect

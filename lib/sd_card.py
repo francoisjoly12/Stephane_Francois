@@ -6,8 +6,6 @@ import adafruit_sdcard
 import storage
 import rtc
 import pcf8523
-import json
-from collections import OrderedDict
 
 class SDLogger:
     def __init__(self, sd_cs_pin):

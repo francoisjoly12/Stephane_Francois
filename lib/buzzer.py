@@ -1,7 +1,6 @@
 #buzzer.py
 import pwmio
 import time
-import asyncio
 
 class BuzzerController:
     def __init__(self, buzzer_pin):

@@ -8,22 +8,54 @@ class fan_motor:
         self.throttle = 0
 
     def run(self, humidity, gas, obstacle):
-                if gas > 10:
+                # gas prioritaire sur humidity
+                if gas > 15:
+                    self.throttle = -0.4
+                elif gas > 25:
+                    self.throttle = -0.5
+                elif gas > 40:
+                    self.throttle = -0.6
+                elif gas > 55:
+                    self.throttle = -0.7
+                elif gas > 70:
                     self.throttle = -0.8
+
+                #humidity
                 elif humidity < 40:
                     self.throttle = 0
                 elif humidity < 45:
-                    self.throttle = 0.5
+                    self.throttle = 0.4
                 elif humidity < 50:
-                    self.throttle = 0.6
+                    self.throttle = 0.5
                 elif humidity < 55:
+                    self.throttle = 0.6
+                elif humidity < 65:
                     self.throttle = 0.7
-                elif humidity > 55:
+                elif humidity > 75:
                     self.throttle = 0.8
-                    
+
+                # gestion d'obstable  
                 if obstacle:
                      self.throttle = 0
 
                 self.motor.throttle = self.throttle
-                return self.throttle
+
+    def stop_fan(self):
+         self.throttle=0
+         self.motor.throttle = self.throttle
+
+    def run_app(self, obstacle):
+         self.throttle = 0.7
+         
+        # gestion d'obstable  
+         if obstacle:
+            self.throttle = 0
+
+         self.motor.throttle = self.throttle
+
+    def get_throttle(self):
+         return self.motor.throttle
+         
+         
+         
 
