@@ -1,4 +1,3 @@
-#Control_App.py
 from tkinter import *
 from tkinter import PhotoImage
 import paho.mqtt.client as mqtt
@@ -49,6 +48,8 @@ class Application(Frame):
             self.update_gas_gauge(float(payload))
         elif topic == self.mqtt_topic_fan_speed:
             self.update_fan_speed_gauge(float(payload))
+        # elif topic == self.mqtt_topic_mode:
+        #     self.update_mode_display(payload)
         elif topic == self.mqtt_topic_alarm:
             self.update_alarm_display(str(payload))
         elif topic == self.mqtt_topic_door:
@@ -204,22 +205,24 @@ class Application(Frame):
         if state == 'Alarme':
             self.blinker_state = True
             self.alarm_label.config(text="Alarm: On", fg="green")
-            self.alarm_button.config(image=self.on_image)  
+            self.alarm_button.config(image=self.on_image)  # Ajout pour mettre à jour l'image du bouton
             if not self.blinker_running:
                 self.blinker_running = True
                 self.flash_color()
         elif state == "":
             self.blinker_state = False
             self.alarm_label.config(text="Alarm: Off", fg="green")
-            self.alarm_button.config(image=self.off_image)  
-            self.blinker_canvas.config(foreground='black')  
+            self.alarm_button.config(image=self.off_image)  # Ajout pour mettre à jour l'image du bouton
+            self.blinker_canvas.config(foreground='black')  # Réinitialiser la couleur du texte
             self.blinker_running = False
 
     def update_door_display(self, state):
         self.door_label.config(text=f"Door: {state}")
         if state == "Up":
             self.door_button.config(image=self.on_image)
+            self.door_label.config(text="Door: Up", fg="green")
         else:
+            self.door_label.config(text="Door: Down", fg="grey")
             self.door_button.config(image=self.off_image)
 
     def update_fan_on_off_display(self, state):

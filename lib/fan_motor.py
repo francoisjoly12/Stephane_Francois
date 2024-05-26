@@ -9,17 +9,17 @@ class fan_motor:
 
     def run(self, humidity, gas, obstacle):
                 # gas prioritaire sur humidity
-                if gas > 15:
-                    self.throttle = -0.4
-                elif gas > 25:
-                    self.throttle = -0.5
-                elif gas > 40:
-                    self.throttle = -0.6
+                if gas > 70:
+                    self.throttle = -0.8
                 elif gas > 55:
                     self.throttle = -0.7
-                elif gas > 70:
-                    self.throttle = -0.8
-
+                elif gas > 40:
+                    self.throttle = -0.6
+                elif gas > 25:
+                    self.throttle = -0.5
+                elif gas > 15:
+                    self.throttle = -0.4
+                    
                 #humidity
                 elif humidity < 40:
                     self.throttle = 0
