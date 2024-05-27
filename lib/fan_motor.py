@@ -1,4 +1,11 @@
-#fan_motor.py
+# -----------------------------------------------------------------------------
+# Script : buzzer.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Objet fan_motor
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 from adafruit_motor.motor import DCMotor
 from pwmio import PWMOut
 
@@ -44,15 +51,7 @@ class fan_motor:
          self.throttle=0
          self.motor.throttle = self.throttle
 
-    def run_app(self, obstacle):
-         self.throttle = 0.7
-         
-        # gestion d'obstable  
-         if obstacle:
-            self.throttle = 0
-
-         self.motor.throttle = self.throttle
-
+   
     def get_throttle(self):
          return self.motor.throttle
          

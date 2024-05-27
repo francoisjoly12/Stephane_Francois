@@ -1,4 +1,11 @@
-#sd_card.py
+# -----------------------------------------------------------------------------
+# Script : buzzer.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Objet SD_Logger
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 import board
 import digitalio
 import busio

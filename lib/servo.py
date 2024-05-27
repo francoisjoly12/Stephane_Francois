@@ -1,4 +1,11 @@
-#servo.py
+# -----------------------------------------------------------------------------
+# Script : buzzer.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Objet ServoController
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 from adafruit_motor import servo
 import pwmio
 

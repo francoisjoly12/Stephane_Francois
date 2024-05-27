@@ -1,4 +1,11 @@
-# obstacle_sensor.py
+# -----------------------------------------------------------------------------
+# Script : buzzer.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Objet ObstacleSensor
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 import digitalio
 
 class ObstacleSensor:

@@ -1,4 +1,11 @@
-#connect_mosquitto.py
+# -----------------------------------------------------------------------------
+# Script : connect_mosquitto.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Fonctions pour la connexion wifi et au broker mosquitto
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 import os
 import socketpool
 import wifi

@@ -1,7 +1,15 @@
-#main.py
+# -----------------------------------------------------------------------------
+# Script : main.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventilation
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 import board
 import time
 import adafruit_dht
+import connect_mosquitto
+# Import des objets représentant les entrées/sorties
 from affichage_ecran import Ecran
 from buzzer import BuzzerController
 from gaz_sensor import GasDetector
@@ -11,8 +19,6 @@ from fan_motor import fan_motor
 from servo import ServoController
 from sd_card import SDLogger
 from led import FlashingLED
-import connect_mosquitto
-
 
 connected = False
 mosquitto = False
@@ -28,8 +34,8 @@ servo_controller = None
 led = None
 humidite = None
 alarm_active = False
-mode = "Auto"  # Mode par défaut
-fan_speed = 0  # Initialisation de la vitesse du ventilateur
+mode = "Auto" 
+fan_speed = 0  
 
 # Topics
 mqtt_topics = {
@@ -47,19 +53,30 @@ def initialize_sd_logger():
     sd_logger = SDLogger(sd_cs_pin=board.IO15)  # Sur le top
     sd_logger.initialize()
 
+# Gestion des erreurs
+# Nous avons choisi d'inclure plus de messages en console que la demande pour aider au déboguage
 def handle_error(message, error=None):
     if error:
         print(message, error)
     else:
         print(message)
-    if sd_logger:
+    if sd_logger:   # Écriture en log seulement si la carte initialisée
         sd_logger.log_data(message)
+
+# Vérification de la présence de l'entrée/sortie pour gestion des erreurs
+def check_instance(obj, cls, name):
+    if isinstance(obj, cls):
+        return obj
+    else:
+        message = f"Aucun {name} détecté."
+        handle_error(message)
+        return None
 
 def connect_to_wifi():
     global connected
     try:
         connect_mosquitto.connect_wifi()
-        print("Connecté au WiFi!")
+        print("Connecté au WiFi")
         connected = True
     except Exception as e:
         handle_error("Impossible de se connecter au WiFi:", e)
@@ -74,14 +91,6 @@ def connect_to_mqtt():
         except Exception as e:
             handle_error("Impossible de se connecter au broker MQTT:", e)
      # mosquitto -v -c "C:\Program Files\mosquitto\mosquitto.conf"      Commande de connexion au serveur mosquitto
-
-def check_instance(obj, cls, name):
-    if isinstance(obj, cls):
-        return obj
-    else:
-        message = f"Aucun {name} détecté."
-        handle_error(message)
-        return None
 
 def initialize_sensors():
     global ecran, buzzer, gas_detector, laser_detector, obstacle_sensor, moteur, servo_controller, led, humidite
@@ -141,14 +150,14 @@ def initialize_sensors():
 
 def subscribe_to_topics():
     global mqtt_client, mosquitto,  mqtt_topics    
-    
+    # Seulement si connecté au broker
     if mosquitto:
         for topic in mqtt_topics.values():
             mqtt_client.subscribe(topic, qos=1)
 
 def publish_topics(gas_level, humidity, alarm_mqtt, fan_state, fan_speed, door_state):
     global connected, mosquitto, mqtt_topics, led, buzzer, gas_detector, humidite, moteur
-
+    # Seulement si connecté au broker
     if connected and mosquitto:
         try:
             if gas_detector:
@@ -168,15 +177,18 @@ def publish_topics(gas_level, humidity, alarm_mqtt, fan_state, fan_speed, door_s
             connected = False
             mosquitto = False
 
+# Programme en mode automatique
 def run_auto(humidity, gas_level, door_state, fan_state, mode, connection, last_detect_time, fin_alarm_timer, alarm_mqtt):
     global mosquitto, mqtt_topics, sd_logger, alarm_active, connected
     global ecran, buzzer, gas_detector, laser_detector, obstacle_sensor, moteur, servo_controller, led, humidite
 
     try:
+        # Vérification si l'alarme est déclenchée actuellement
         if alarm_active:
             alarm_mqtt = "Alarme"
         else:
             alarm_mqtt = ""
+
         # Opération de la fan
         if moteur:
             obstacle = obstacle_sensor.detect()
@@ -204,7 +216,7 @@ def run_auto(humidity, gas_level, door_state, fan_state, mode, connection, last_
                 door_state = "Up"
                 servo_controller.open_door() 
 
-        # Alarme led et buzzer
+        # Alarme led et buzzer lors de la détection du vol
         if alarm_active and led and buzzer:
             led.flash_rapide(time.monotonic())
             buzzer.alarme_rapide(time.monotonic())
@@ -230,13 +242,13 @@ def run_auto(humidity, gas_level, door_state, fan_state, mode, connection, last_
     except Exception as e:
         print("Une erreur est survenue :", e)
 
+# Exécution du programme en mode manuel
 def run_manual_mode(connect_mosquitto, humidity, gas_level, door_state, fan_state, mode, connection, last_detect_time, fin_alarm_timer, alarm_mqtt):
     mode = "Man"
     subscribe_to_topics()
     
     # Gestion de l'alarme
     if connect_mosquitto.app_alarm:
-        alarm_active = True
         alarm_mqtt = "Alarme"
         led.flash_rapide(time.monotonic())
         buzzer.alarme_rapide(time.monotonic())
@@ -248,8 +260,12 @@ def run_manual_mode(connect_mosquitto, humidity, gas_level, door_state, fan_stat
     # Gestion du ventilateur
     if connect_mosquitto.fan_on:
         obstacle = obstacle_sensor.detect()
-        moteur.run_app(obstacle)
-        fan_state = "Push" if moteur.throttle > 0 else "Off"
+        moteur.run(humidity, gas_level, obstacle)
+        fan_state = (
+                "Pull" if moteur.throttle < 0 else
+                "Push" if moteur.throttle > 0 else
+                "Off"
+            )
         if obstacle:
             fan_state = "Bloc"
         fan_speed = moteur.get_throttle()
@@ -275,19 +291,17 @@ def main():
     global mosquitto, mqtt_topics, sd_logger, alarm_active, connected
     global ecran, buzzer, gas_detector, laser_detector, obstacle_sensor, moteur, servo_controller, led, humidite
 
-    
     initialize_sd_logger()
     connect_to_wifi()
     connect_to_mqtt()
     initialize_sensors()
     subscribe_to_topics()
 
-    # Variables de temps et d'état
+    # Variables de temps
     last_display_time = time.monotonic()
     last_detect_time = time.monotonic()
     fin_alarm_timer = time.monotonic()
-    alarm_mqtt = ""
-
+   
     # Première valeur des capteurs
     if humidite:
         humidity = humidite.humidity
@@ -299,6 +313,7 @@ def main():
         gas_level = 'N/A'
     
     # États
+    alarm_mqtt = ""
     door_state = "Up"
     fan_state = "Off"
     if mosquitto:
@@ -317,7 +332,6 @@ def main():
                     humidity = humidite.humidity
                 if gas_detector:
                     gas_level = gas_detector.get_value()
-            
             
             try:
                 # Vérification de la connexion MQTT

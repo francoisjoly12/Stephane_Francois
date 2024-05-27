@@ -1,3 +1,11 @@
+# -----------------------------------------------------------------------------
+# Script : Control_App.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Application de controle via broker mosquitto
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 from tkinter import *
 from tkinter import PhotoImage
 import paho.mqtt.client as mqtt
@@ -48,8 +56,6 @@ class Application(Frame):
             self.update_gas_gauge(float(payload))
         elif topic == self.mqtt_topic_fan_speed:
             self.update_fan_speed_gauge(float(payload))
-        # elif topic == self.mqtt_topic_mode:
-        #     self.update_mode_display(payload)
         elif topic == self.mqtt_topic_alarm:
             self.update_alarm_display(str(payload))
         elif topic == self.mqtt_topic_door:

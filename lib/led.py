@@ -1,4 +1,11 @@
-#led.py
+# -----------------------------------------------------------------------------
+# Script : buzzer.py
+# Auteur : François Joly, Stephane_Provost
+# Description : Programme de simulation d'une chambre forte avec ventillation.
+#               Objet LED
+# Date : 2024/05/27
+# -----------------------------------------------------------------------------
+
 import digitalio
 import time
 
