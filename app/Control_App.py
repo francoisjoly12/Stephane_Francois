@@ -49,13 +49,14 @@ class Application(Frame):
         topic = msg.topic
         payload = msg.payload.decode()
         print(f"Message received on topic {topic}: {payload}")
-
+        # Jauges
         if topic == self.mqtt_topic_hum:
             self.update_humidity_gauge(float(payload))
         elif topic == self.mqtt_topic_gas:
             self.update_gas_gauge(float(payload))
         elif topic == self.mqtt_topic_fan_speed:
             self.update_fan_speed_gauge(float(payload))
+        # Label des boutons
         elif topic == self.mqtt_topic_alarm:
             self.update_alarm_display(str(payload))
         elif topic == self.mqtt_topic_door:
@@ -163,7 +164,7 @@ class Application(Frame):
     def switch_door(self, button, label):
         if button["image"] == str(self.on_image):
             button.config(image=self.off_image)
-            label.config(text="Door: Down", fg="grey")
+            label.config(text="Door: Down", fg="green")
             self.mqtt_client.publish(self.mqtt_topic_door, "Down")
         else:
             button.config(image=self.on_image)
@@ -173,7 +174,7 @@ class Application(Frame):
     def switch_alarm(self, button, label):
         if button["image"] == str(self.on_image):
             button.config(image=self.off_image)
-            label.config(text="Alarm: Off", fg="grey")
+            label.config(text="Alarm: Off", fg="green")
             self.mqtt_client.publish(self.mqtt_topic_alarm, "Off")
         else:
             button.config(image=self.on_image)
@@ -183,7 +184,7 @@ class Application(Frame):
     def switch_fan(self, button, label):
         if button["image"] == str(self.on_image):
             button.config(image=self.off_image)
-            label.config(text="Fan: Off", fg="grey")
+            label.config(text="Fan: Off", fg="green")
             self.mqtt_client.publish(self.mqtt_topic_fan_mode, "Off")
         else:
             button.config(image=self.on_image)
@@ -211,15 +212,15 @@ class Application(Frame):
         if state == 'Alarme':
             self.blinker_state = True
             self.alarm_label.config(text="Alarm: On", fg="green")
-            self.alarm_button.config(image=self.on_image)  # Ajout pour mettre à jour l'image du bouton
+            self.alarm_button.config(image=self.on_image) 
             if not self.blinker_running:
                 self.blinker_running = True
                 self.flash_color()
         elif state == "":
             self.blinker_state = False
             self.alarm_label.config(text="Alarm: Off", fg="green")
-            self.alarm_button.config(image=self.off_image)  # Ajout pour mettre à jour l'image du bouton
-            self.blinker_canvas.config(foreground='black')  # Réinitialiser la couleur du texte
+            self.alarm_button.config(image=self.off_image)  
+            self.blinker_canvas.config(foreground='black')  
             self.blinker_running = False
 
     def update_door_display(self, state):
@@ -228,7 +229,7 @@ class Application(Frame):
             self.door_button.config(image=self.on_image)
             self.door_label.config(text="Door: Up", fg="green")
         else:
-            self.door_label.config(text="Door: Down", fg="grey")
+            self.door_label.config(text="Door: Down", fg="green")
             self.door_button.config(image=self.off_image)
 
     def update_fan_on_off_display(self, state):
@@ -245,3 +246,8 @@ if __name__ == "__main__":
     root.geometry("650x750")
     app = Application(root)
     app.mainloop()
+
+
+# Références:
+# https://funprojects.blog/2021/02/19/gauges-in-a-python-canvas/
+# https://www.geeksforgeeks.org/on-off-toggle-button-switch-in-tkinter/

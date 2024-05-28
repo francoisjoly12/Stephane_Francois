@@ -11,7 +11,6 @@ import digitalio
 import busio
 import adafruit_sdcard
 import storage
-import rtc
 import pcf8523
 
 class SDLogger:
