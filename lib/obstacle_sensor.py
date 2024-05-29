@@ -19,3 +19,4 @@ class ObstacleSensor:
         if not self.sensor.value:
             print("Obstacle détecté!")
             return not self.sensor.value
+        

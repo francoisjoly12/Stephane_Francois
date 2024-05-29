@@ -23,3 +23,4 @@ class LaserDetector:
         if self.receiver_pin.value:  
                 self.alert()
                 return True
+        

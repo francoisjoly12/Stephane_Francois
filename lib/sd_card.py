@@ -46,3 +46,4 @@ class SDLogger:
                     file.write(log_entry + "\n")
             except OSError as e:
                 print("Erreur lors de l'écriture des données")
+

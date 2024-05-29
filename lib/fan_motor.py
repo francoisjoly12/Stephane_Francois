@@ -55,6 +55,3 @@ class fan_motor:
     def get_throttle(self):
          return self.motor.throttle
          
-         
-         
-

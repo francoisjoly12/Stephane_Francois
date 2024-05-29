@@ -20,3 +20,4 @@ class GasDetector:
         if(gas_value < 0):
             gas_value = 0
         return gas_value
+

@@ -128,3 +128,4 @@ def connect_mqtt():
 
 def is_mqtt_connected(mqtt_client):
     return mqtt_client.is_connected()
+

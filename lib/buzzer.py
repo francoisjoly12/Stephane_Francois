@@ -41,3 +41,4 @@ class BuzzerController:
 
     def off(self):
         self.buzzer.duty_cycle = not self.buzzer.duty_cycle 
+        

@@ -30,3 +30,4 @@ class Ecran:
         self.text_area.text = "Hum: {:.1f}% Vent: {}\nPorte: {} MQTT: {}\nMode: {}\nGaz: {:.1f} ppm".format(
                     humidity, fan_state, door_state,connection , mode,gas_level)
         self.display.refresh()
+

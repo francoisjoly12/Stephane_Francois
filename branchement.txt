@@ -1,9 +1,0 @@
-moteur : A0 et D8(IO13, IO14)
-Servo : A1
-Laser : transmitter D2(IO7) receiver D4(IO9)
-Gaz : A3
-Obstacle : D7(IO12)
-Buzzer : D5(IO10)
-Led : D6(IO11)
-DHT : D3(IO8)
-SD_card : IO15
