@@ -352,18 +352,4 @@ def main():
             else:
                 humidity, gas_level, door_state, fan_state, mode, connection, last_detect_time, fin_alarm_timer, alarm_mqtt = run_manual_mode(
                     connect_mosquitto, humidity, gas_level, door_state, fan_state, mode, connection, last_detect_time, fin_alarm_timer, alarm_mqtt
-                )
-                        
-            # Affichage de l'écran  
-            if time.monotonic() - last_display_time >= 0.5:
-                last_display_time = time.monotonic()
-                if ecran:
-                    ecran.refresh_text(humidity, gas_level, door_state, fan_state, mode, connection)
-
-    except KeyboardInterrupt:
-        pass
-    except Exception as e:
-        print("Une erreur est survenue :", e)
-
-main()
-
+  
